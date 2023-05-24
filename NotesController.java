@@ -51,24 +51,11 @@ public class NotesController {
     }
 
 
-//    @DeleteMapping("/Notes")
-//    public void delete(@PathVariable("Id") Notes Note) {
-//        System.out.println(Note);
-//        var notes = noteRepository.findAll();
-//        System.out.println(notes);
-//        if (notes != null) {
-//            noteRepository.delete(Note);
-//            System.out.println(notes);
-//        } else {
-//            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Note Id not found");
-//        }
-//    }
-
     @DeleteMapping("/Notes")
-    public String deleteByName(@RequestParam(value = "Notes") Notes note) {
-        var notes = noteRepository.findById(note.getId());
-        if (notes != null) {
-            noteRepository.delete(note);
+    public String deleteById(@RequestParam(value = "id") int id) {
+        var notes = noteRepository.findById(id);
+        if (notes.isPresent()) {
+            noteRepository.deleteById(id);
         } else {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Note Id not found");
         }
@@ -77,7 +64,7 @@ public class NotesController {
     }
 
 
-    @PutMapping("/NotesStatus/{Id}")
+    @PutMapping("/Notes/{Id}")
     public Notes update(@PathVariable("Id") int id, @RequestParam("important") boolean important) {
         var cat = noteRepository.findById(id);
         if (cat.isPresent()) {
