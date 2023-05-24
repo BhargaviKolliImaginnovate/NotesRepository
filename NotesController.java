@@ -3,10 +3,12 @@ package Notes.com.example.Notesdemo.controller;
 import Notes.com.example.Notesdemo.entity.Notes;
 import Notes.com.example.Notesdemo.repository.NoteRepository;
 import Notes.com.example.Notesdemo.service.NotesService;
-import jakarta.persistence.Id;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -31,7 +33,7 @@ public class NotesController {
 //    }
 
 
-    @GetMapping(value = "/{id}")
+    @GetMapping("/Notes/{id}")
     public Optional<Notes> findById(@PathVariable("id") int id) {
         return noteRepository.findById(id);
     }
@@ -76,22 +78,22 @@ public class NotesController {
     }
 
     @GetMapping("/Notes")
-
-    public List<Notes> findAll(@RequestParam(defaultValue = "0") int pageNumber, @RequestParam(defaultValue = "3") int pageSize, @PathVariable String sortBytitle) {
-        return (List<Notes>) noteService.findAll(pageNumber, pageSize, sortBytitle);
+    public List<Notes> notes(@RequestParam(defaultValue = "0") int pageNumber, @RequestParam(defaultValue = "3") int pageSize, @PathVariable String sortByTitle) {
+        return (List<Notes>) noteService.findAll(pageNumber, pageSize, sortByTitle);
 
     }
-
-//        @GetMapping("/Notes")
-//    public List<Notes> Notes(@RequestParam(defaultValue = "0")int pageNumber, @RequestParam(defaultValue = "10") int pageSize, @PathVariable String sortByName){
-//        return  noteRepository.findAll(pageNumber,pageSize,sortByName);
-//    }
 
     @GetMapping("/notes")
-    public ResponseEntity<Page<Notes>> getNotesPage(@RequestParam(name = "pageNo",defaultValue = "0") int pageNo,
-                                                    @RequestParam(name = "pageSize",defaultValue = "3") int pageSize){
-        Page<Notes>NotesPage=noteService.getNotesPage(pageNo,pageSize);
-        return ResponseEntity.ok(NotesPage);
+    public ResponseEntity<List<Notes>> getAllEmployees(@RequestParam(defaultValue = "0") Integer pageNo,
+                                                       @RequestParam(defaultValue = "2") Integer pageSize,
+                                                       @RequestParam(defaultValue = "title") String sortBy,
+                                                       @RequestParam(defaultValue = "content") String sortByContent)
+    {
+        List<Notes> list = noteService.getAllEmployees(pageNo, pageSize, sortBy,sortByContent);
+        return new ResponseEntity<List<Notes>>(list, new HttpHeaders(), HttpStatus.OK);
     }
+
+
+
 
 }
