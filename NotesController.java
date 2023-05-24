@@ -5,6 +5,8 @@ import Notes.com.example.Notesdemo.repository.NoteRepository;
 import Notes.com.example.Notesdemo.service.NotesService;
 import jakarta.persistence.Id;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -40,10 +42,7 @@ public class NotesController {
         return new ResponseEntity<>(noteRepository.getByUserId(userId), HttpStatus.OK);
     }
 
-//    @GetMapping("/Notes-Paging")
-//    public List<Notes> Notes(@RequestParam(defaultValue = "0")int pageNumber, @RequestParam(defaultValue = "10") int pageSize, @PathVariable String sortByName){
-//        return  notesRepository.Notes(pageNumber,pageSize,sortByName);
-//    }
+
 
     @PostMapping("/Notes")
     public Notes save(@RequestBody Notes note) {
@@ -66,14 +65,14 @@ public class NotesController {
 
     @PutMapping("/Notes/{Id}")
     public Notes update(@PathVariable("Id") int id, @RequestParam("important") boolean important) {
-        var cat = noteRepository.findById(id);
-        if (cat.isPresent()) {
-            var notes = cat.get();
+        var imp = noteRepository.findById(id);
+        if (imp.isPresent()) {
+            var notes = imp.get();
             notes.setImportant(important);
             noteRepository.save(notes);
             return notes;
         } else
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "room number is Not Found");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Notes Id is Not Found");
     }
 
     @GetMapping("/Notes")
@@ -82,4 +81,17 @@ public class NotesController {
         return (List<Notes>) noteService.findAll(pageNumber, pageSize, sortBytitle);
 
     }
+
+//        @GetMapping("/Notes")
+//    public List<Notes> Notes(@RequestParam(defaultValue = "0")int pageNumber, @RequestParam(defaultValue = "10") int pageSize, @PathVariable String sortByName){
+//        return  noteRepository.findAll(pageNumber,pageSize,sortByName);
+//    }
+
+    @GetMapping("/notes")
+    public ResponseEntity<Page<Notes>> getNotesPage(@RequestParam(name = "pageNo",defaultValue = "0") int pageNo,
+                                                    @RequestParam(name = "pageSize",defaultValue = "3") int pageSize){
+        Page<Notes>NotesPage=noteService.getNotesPage(pageNo,pageSize);
+        return ResponseEntity.ok(NotesPage);
+    }
+
 }
